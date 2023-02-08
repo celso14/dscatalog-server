@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dscatalog.dscatalog.dto.CategoryDto;
 import com.dscatalog.dscatalog.entities.Category;
 import com.dscatalog.dscatalog.repositories.CategoryRepository;
-import com.dscatalog.dscatalog.services.exceptions.EntityNotFoundException;
+import com.dscatalog.dscatalog.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 // Essa notation registra essa classe como um componente de injeção de dependência automaticamente
 @Service
@@ -35,11 +37,12 @@ public class CategoryService {
 		
 		Optional<Category> obj = repository.findById(id);
 		
-		Category entity = obj.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		
 		return new CategoryDto(entity);
 	}
 
+	@Transactional
 	public CategoryDto insert(CategoryDto dto) {
 		
 		Category entity = new Category();
@@ -50,5 +53,22 @@ public class CategoryService {
 		
 		return new CategoryDto(entity);
 	}
-	
+
+	@Transactional
+	public CategoryDto update(Long id, CategoryDto dto) {
+		try {
+			
+			Category entity = repository.getReferenceById(id);
+			
+			entity.setName(dto.getName());
+			
+			entity = repository.save(entity);
+			
+			return new CategoryDto(entity);
+		}
+		catch(EntityNotFoundException e) {
+			
+			throw new ResourceNotFoundException("Id not Found" + id);
+		}
+	}
 }
