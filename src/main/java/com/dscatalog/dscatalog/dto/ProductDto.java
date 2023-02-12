@@ -1,52 +1,29 @@
-package com.dscatalog.dscatalog.entities;
+package com.dscatalog.dscatalog.dto;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.dscatalog.dscatalog.entities.Category;
+import com.dscatalog.dscatalog.entities.Product;
 
-@Entity
-@Table(name = "tb_product")
-public class Product implements Serializable{
-	private static final long serialVersionUID = 1L;
+public class ProductDto implements Serializable{
+		private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	@Column(columnDefinition = "TEXT")//aumentar o tamanho do texto
 	private String description;
 	private Double price;
 	private String imgUrl;
-	
-	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant date;
+	private List<CategoryDto> categories = new ArrayList<>();
 	
-	//associação de entidades
-	@ManyToMany
-	@JoinTable(
-			name = "tb_product_category",
-			joinColumns = @JoinColumn(name = "product_id"),//vaiser a tabela que tiver referenciando
-			inverseJoinColumns = @JoinColumn(name = "category_id")
-			)
-	Set<Category> categories = new HashSet<>();
-	//é usado o set pq ele não repete 
-	
-	public Product() {	
-	}
+	public ProductDto() {}
 
-	public Product(Long id, String name, String description, Double price, String imgUrl, Instant date) {
+	public ProductDto(Long id, String name, String description, Double price, String imgUrl, Instant date) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -54,6 +31,21 @@ public class Product implements Serializable{
 		this.price = price;
 		this.imgUrl = imgUrl;
 		this.date = date;
+	}
+	
+	public ProductDto(Product entity) {
+		super();
+		this.id = entity.getId();
+		this.name = entity.getName();
+		this.description = entity.getDescription();
+		this.price = entity.getPrice();
+		this.imgUrl = entity.getImgUrl();
+		this.date = entity.getDate();	
+	}
+	
+	public ProductDto(Product entity, Set<Category> categories) {
+		this(entity);
+		categories.forEach(category -> this.categories.add(new CategoryDto(category)));
 	}
 
 	public Long getId() {
@@ -104,8 +96,12 @@ public class Product implements Serializable{
 		this.date = date;
 	}
 
-	public Set<Category> getCategories() {
+	public List<CategoryDto> getCategories() {
 		return categories;
+	}
+
+	public void setCategories(List<CategoryDto> categories) {
+		this.categories = categories;
 	}
 
 	@Override
@@ -121,7 +117,7 @@ public class Product implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Product other = (Product) obj;
+		ProductDto other = (ProductDto) obj;
 		return Objects.equals(id, other.id);
 	}
 	

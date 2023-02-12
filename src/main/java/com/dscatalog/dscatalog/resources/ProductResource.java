@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.dscatalog.dscatalog.dto.CategoryDto;
-import com.dscatalog.dscatalog.services.CategoryService;
+import com.dscatalog.dscatalog.dto.ProductDto;
+import com.dscatalog.dscatalog.services.ProductService;
 
 @RestController
-@RequestMapping(value = "/categories")
-public class CategoryResource {
+@RequestMapping(value = "/products")
+public class ProductResource {
 	//Resource implementa o controlador REST
 	
 	@Autowired
-	private CategoryService service;
+	private ProductService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<CategoryDto>> findAll(
+	public ResponseEntity<Page<ProductDto>> findAll(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction,
@@ -39,21 +39,21 @@ public class CategoryResource {
 		
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
-		Page<CategoryDto> list = service.findAllPaged(pageRequest);
+		Page<ProductDto> list = service.findAllPaged(pageRequest);
 		
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<CategoryDto> findById(@PathVariable Long id){
+	public ResponseEntity<ProductDto> findById(@PathVariable Long id){
 		
-		CategoryDto dto = service.findById(id);
+		ProductDto dto = service.findById(id);
 		
 		return ResponseEntity.ok().body(dto);
 	}
 	
 	@PostMapping
-	public ResponseEntity<CategoryDto> insert(@RequestBody CategoryDto dto){
+	public ResponseEntity<ProductDto> insert(@RequestBody ProductDto dto){
 		
 		dto = service.insert(dto);
 		
@@ -64,7 +64,7 @@ public class CategoryResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<CategoryDto> update(@PathVariable Long id, @RequestBody CategoryDto dto){
+	public ResponseEntity<ProductDto> update(@PathVariable Long id, @RequestBody ProductDto dto){
 		
 		dto = service.update(id,dto);
 		
@@ -72,7 +72,7 @@ public class CategoryResource {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<CategoryDto> delete(@PathVariable Long id){
+	public ResponseEntity<ProductDto> delete(@PathVariable Long id){
 		
 		service.delete(id);
 		

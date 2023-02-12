@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dscatalog.dscatalog.dto.CategoryDto;
+import com.dscatalog.dscatalog.dto.ProductDto;
 import com.dscatalog.dscatalog.entities.Category;
+import com.dscatalog.dscatalog.entities.Product;
 import com.dscatalog.dscatalog.repositories.CategoryRepository;
+import com.dscatalog.dscatalog.repositories.ProductRepository;
 import com.dscatalog.dscatalog.services.exceptions.DbException;
 import com.dscatalog.dscatalog.services.exceptions.ResourceNotFoundException;
 
@@ -20,53 +23,56 @@ import jakarta.persistence.EntityNotFoundException;
 
 // Essa notation registra essa classe como um componente de injeção de dependência automaticamente
 @Service
-public class CategoryService {
+public class ProductService {
 	
 	@Autowired
-	private CategoryRepository repository;
+	private ProductRepository repository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	@Transactional(readOnly = true)
-	public Page<CategoryDto> findAllPaged(PageRequest pageRequest){
+	public Page<ProductDto> findAllPaged(PageRequest pageRequest){
 		
-		Page<Category> list = repository.findAll(pageRequest);
+		Page<Product> list = repository.findAll(pageRequest);
 		
-		return list.map(x -> new CategoryDto(x));
+		return list.map(x -> new ProductDto(x));
 	}
 
 	//Optional serve para evitar se trabalhar com objetos nulos
 	@Transactional(readOnly = true)
-	public CategoryDto findById(Long id) {
+	public ProductDto findById(Long id) {
 		
-		Optional<Category> obj = repository.findById(id);
+		Optional<Product> obj = repository.findById(id);
 		
-		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		
-		return new CategoryDto(entity);
+		return new ProductDto(entity, entity.getCategories());
 	}
 
 	@Transactional
-	public CategoryDto insert(CategoryDto dto) {
+	public ProductDto insert(ProductDto dto) {
 		
-		Category entity = new Category();
+		Product entity = new Product();
 		
-		entity.setName(dto.getName());
+		copyDtoToEntity(dto, entity);
 		
 		entity = repository.save(entity);
 		
-		return new CategoryDto(entity);
+		return new ProductDto(entity);
 	}
 
 	@Transactional
-	public CategoryDto update(Long id, CategoryDto dto) {
+	public ProductDto update(Long id, ProductDto dto) {
 		try {
 			
-			Category entity = repository.getReferenceById(id);
+			Product entity = repository.getReferenceById(id);
 			
-			entity.setName(dto.getName());
+			copyDtoToEntity(dto, entity);
 			
 			entity = repository.save(entity);
 			
-			return new CategoryDto(entity);
+			return new ProductDto(entity);
 		}
 		catch (EntityNotFoundException e) {
 			
@@ -84,5 +90,21 @@ public class CategoryService {
 		catch (DataIntegrityViolationException e) {
 			throw new DbException("Integrity violation");
 		}
+	}
+	
+	private void copyDtoToEntity(ProductDto dto, Product entity) {
+		
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setPrice(dto.getPrice());
+		entity.setDate(dto.getDate());
+		
+		entity.getCategories().clear();
+		for(CategoryDto categoryDto : dto.getCategories()) {
+			Category category = categoryRepository.getReferenceById(categoryDto.getId());
+			entity.getCategories().add(category);
+		}
+		
 	}
 }
