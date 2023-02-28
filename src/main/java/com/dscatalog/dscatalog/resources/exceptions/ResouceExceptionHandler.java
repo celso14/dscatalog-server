@@ -24,15 +24,14 @@ public class ResouceExceptionHandler {
 		
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("Resource Not Found");
-		err.setMessage(e.getMessage());
+		err.setError(e.getMessage());
 		err.setPath(request.getRequestURI());
 		
 		return ResponseEntity.status(status).body(err);
 	}
 	
 	@ExceptionHandler(DbException.class)
-	public ResponseEntity<StandardError> database(ResourceNotFoundException e, HttpServletRequest request){
+	public ResponseEntity<StandardError> database(DbException e, HttpServletRequest request){
 		
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		
@@ -40,8 +39,7 @@ public class ResouceExceptionHandler {
 		
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("Database Exception");
-		err.setMessage(e.getMessage());
+		err.setError(e.getMessage());
 		err.setPath(request.getRequestURI());
 		
 		return ResponseEntity.status(status).body(err);

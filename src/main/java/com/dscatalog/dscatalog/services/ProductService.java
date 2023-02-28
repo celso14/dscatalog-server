@@ -45,7 +45,7 @@ public class ProductService {
 		
 		Optional<Product> obj = repository.findById(id);
 		
-		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		Product entity = obj.orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado!"));
 		
 		return new ProductDto(entity, entity.getCategories());
 	}
@@ -76,7 +76,7 @@ public class ProductService {
 		}
 		catch (EntityNotFoundException e) {
 			
-			throw new ResourceNotFoundException("Id not Found" + id);
+			throw new ResourceNotFoundException("Produto não encontrado para atualização");
 		}
 	}
 
@@ -85,7 +85,7 @@ public class ProductService {
 			repository.deleteById(id);
 		}
 		catch (EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException("Id not Found" + id);
+			throw new ResourceNotFoundException("Produto não encontrado para exclusão");
 		}
 		catch (DataIntegrityViolationException e) {
 			throw new DbException("Integrity violation");
