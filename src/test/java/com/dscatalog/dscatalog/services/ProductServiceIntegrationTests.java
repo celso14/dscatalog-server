@@ -3,6 +3,7 @@ package com.dscatalog.dscatalog.services;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,36 @@ public class ProductServiceIntegrationTests {
         nonExistingId = 1000L;
         totalProducts = 25L;
         productDto = Factory.createProductDTO();
+    }
+    
+    @Test
+    public void updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Throwable exception =  assertThrows(ResourceNotFoundException.class, () ->
+                productService.update(nonExistingId, productDto));
+
+        assertEquals("Produto não encontrado para atualização", exception.getMessage());
+    }
+
+    @Test
+    public void updateShouldReturnProductDTOWhenIdExists() {
+        ProductDto result = productService.update(existingId, productDto);
+
+        assertNotNull(result);
+
+        assertEquals(ProductDto.class, result.getClass());
+        assertEquals(existingId, result.getId());
+        assertNotEquals("The Lord of the Rings", result.getName());
+    }
+
+    @Test
+    public void insertShouldReturnProductDTO() {
+        productDto.setId(null);
+        ProductDto result = productService.insert(productDto);
+
+        assertNotNull(result);
+
+        assertEquals(ProductDto.class, result.getClass());
+        assertEquals(totalProducts + 1, result.getId());
     }
     
     @Test
