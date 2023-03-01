@@ -1,68 +1,50 @@
 package com.dscatalog.dscatalog.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_category")
-public class Category implements Serializable {
-	
+@Table(name = "tb_role")
+public class Role implements Serializable{
 	private static final long serialVersionUID = 1L;
-	//Serializable - Padrão na linguagem java para que o objeto possa ser convertido em bytes
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
+	private String authority;
 	
-	//Faz o mapeamento com base no já está feito na entidade Product
-	@ManyToMany(mappedBy = "categories")
-	private Set<Product> products = new HashSet<>();
-	
-	public Category() {
-		
+	public Role() {
 	}
-
-	public Category(Long id, String name) {
+	
+	public Role(Long id, String authority) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.authority = authority;
 	}
 
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public String getName() {
-		return name;
+	public String getAuthority() {
+		return authority;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthority(String authority) {
+		this.authority = authority;
 	}
-
-	public Set<Product> getProducts() {
-		return products;
-	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -71,8 +53,7 @@ public class Category implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Category other = (Category) obj;
+		Role other = (Role) obj;
 		return Objects.equals(id, other.id);
 	}
-	
 }
