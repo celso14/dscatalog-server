@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,10 +26,13 @@ public class User implements Serializable {
 	private Long id;
 	private String firstName;
 	private String lastName;
+	
+	@Column(unique = true)
 	private String email;
 	private String password;
 	
-	@ManyToMany
+	//Isso força quando pegar um usuário do BD, as Roles de acesso dele virem junto com o usuário || ps: exigência do Spring Security
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 			name = "tb_user_role",
 			joinColumns = @JoinColumn(name = "user_id"),//vaiser a tabela que tiver referenciando
