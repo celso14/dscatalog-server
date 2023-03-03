@@ -20,6 +20,8 @@ import com.dscatalog.dscatalog.dto.UserDto;
 import com.dscatalog.dscatalog.dto.UserInsertDto;
 import com.dscatalog.dscatalog.services.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
@@ -45,7 +47,7 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<UserDto> insert(@RequestBody UserInsertDto dto){
+	public ResponseEntity<UserDto> insert(@Valid @RequestBody UserInsertDto dto){
 		
 		UserDto newDto = service.insert(dto);
 		
@@ -56,7 +58,7 @@ public class UserResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto dto){
+	public ResponseEntity<UserDto> update(@Valid @PathVariable Long id, @RequestBody UserDto dto){
 		
 		dto = service.update(id,dto);
 		
